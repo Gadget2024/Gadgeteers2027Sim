@@ -57,7 +57,7 @@ releases. It has its own repository.
 ## 3. Get the project
 
 ```powershell
-git clone <this repo's URL>
+git clone https://github.com/Gadget2024/Gadgeteers2027Sim.git
 ```
 
 Open the cloned folder in **2027 WPILib VS Code** (File > Open Folder). Use the 2027
