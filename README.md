@@ -83,6 +83,35 @@ controller is plugged in.
 
 Pick **Tele** and press **Enable** in the Driver Station to enable the simulated robot.
 
+## 5. Drive the robot on the field map
+
+The project simulates a kitbot-style differential drivetrain and publishes its position
+as a field map.
+
+1. Plug in a gamepad (Xbox, PlayStation or similar). In the Driver Station, the gamepad
+   indicator turns green and the controller is listed in slot 0.
+2. In the **Sim GUI** window open **NetworkTables > Telemetry > Field**. A field window
+   opens with the robot drawn at its start position.
+3. In the Driver Station pick **Tele** and press **Enable**.
+
+| Control | Action |
+| --- | --- |
+| Left stick up / down | Drive forward / backward |
+| Right stick left / right | Turn |
+| Start button | Put the robot back at its start position |
+
+The robot stops at the edges of the field. The same pose is on NetworkTables at
+`/Telemetry/Field/Robot`, so AdvantageScope or Elastic connected to `localhost` can show
+it too.
+
+The drivetrain code is in `src/main/java/first/robot/Drivetrain.java`. Its tests run
+without a controller:
+
+```powershell
+$env:JAVA_HOME = "C:\Users\Public\wpilib\2027_alpha7\jdk"
+.\gradlew.bat test
+```
+
 ### Running without VS Code
 
 There is no standalone `simulateJava` Gradle task in 2027 Alpha 7; VS Code launches the

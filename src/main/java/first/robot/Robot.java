@@ -4,6 +4,7 @@
 
 package first.robot;
 
+import org.wpilib.driverstation.Gamepad;
 import org.wpilib.framework.TimedRobot;
 import org.wpilib.tunable.Selectable;
 import org.wpilib.tunable.Tunables;
@@ -18,6 +19,9 @@ public class Robot extends TimedRobot {
   private static final String CUSTOM_AUTO = "My Auto";
   private String autoSelected;
   private final Selectable<String> chooser = new Selectable<>();
+
+  private final Gamepad controller = new Gamepad(0);
+  private final Drivetrain drivetrain = new Drivetrain();
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -37,7 +41,9 @@ public class Robot extends TimedRobot {
    * SmartDashboard integrated updating.
    */
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+    drivetrain.periodic();
+  }
 
   /**
    * This autonomous (along with the chooser code above) shows how to select between different
@@ -76,11 +82,22 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    // Left stick drives forward and back, right stick turns. Pushing a stick forward or left
+    // reads negative, so both are inverted.
+    drivetrain.arcadeDrive(-controller.getLeftY(), -controller.getRightX());
+
+    // Start puts the robot back where it began.
+    if (controller.getStartButtonPressed()) {
+      drivetrain.resetPose(Drivetrain.START_POSE);
+    }
+  }
 
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    drivetrain.stop();
+  }
 
   /** This function is called periodically when disabled. */
   @Override
@@ -100,5 +117,7 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    drivetrain.simulationPeriodic();
+  }
 }
