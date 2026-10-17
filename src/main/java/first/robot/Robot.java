@@ -28,6 +28,7 @@ public class Robot extends TimedRobot {
   public Robot() {
     chooser.addDefault(SimpleAuto.DRIVE_FORWARD, SimpleAuto.DRIVE_FORWARD);
     chooser.add(SimpleAuto.DRIVE_AND_TURN, SimpleAuto.DRIVE_AND_TURN);
+    chooser.add(SimpleAuto.SQUARE, SimpleAuto.SQUARE);
     Tunables.publish("Auto choices", chooser);
   }
 
