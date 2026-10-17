@@ -15,21 +15,19 @@ import org.wpilib.tunable.Tunables;
  * this project, you must also update the Main.java file in the project.
  */
 public class Robot extends TimedRobot {
-  private static final String DEFAULT_AUTO = "Default";
-  private static final String CUSTOM_AUTO = "My Auto";
-  private String autoSelected;
   private final Selectable<String> chooser = new Selectable<>();
 
   private final Gamepad controller = new Gamepad(0);
   private final Drivetrain drivetrain = new Drivetrain();
+  private final SimpleAuto auto = new SimpleAuto(drivetrain);
 
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
   public Robot() {
-    chooser.addDefault("Default Auto", DEFAULT_AUTO);
-    chooser.add("My Auto", CUSTOM_AUTO);
+    chooser.addDefault(SimpleAuto.DRIVE_FORWARD, SimpleAuto.DRIVE_FORWARD);
+    chooser.add(SimpleAuto.DRIVE_AND_TURN, SimpleAuto.DRIVE_AND_TURN);
     Tunables.publish("Auto choices", chooser);
   }
 
@@ -46,34 +44,24 @@ public class Robot extends TimedRobot {
   }
 
   /**
-   * This autonomous (along with the chooser code above) shows how to select between different
-   * autonomous modes using the dashboard. The sendable chooser code works with the Java
-   * SmartDashboard. If you prefer the LabVIEW Dashboard, remove all of the chooser code and
-   * uncomment the getString line to get the auto name from the text box below the Gyro
+   * Starts the autonomous routine picked in the "Auto choices" selector. The robot is moved back
+   * to its start position first, so every run begins from the same place.
    *
-   * <p>You can add additional auto modes by adding additional comparisons to the switch structure
-   * below with additional strings. If using Selectable make sure to add them to the chooser code
-   * above as well.
+   * <p>The routines themselves are in SimpleAuto.java. To add one, write it there and add its name
+   * to the chooser in the constructor above.
    */
   @Override
   public void autonomousInit() {
-    autoSelected = chooser.getSelected();
-    // autoSelected = SmartDashboard.getString("Auto Selector", DEFAULT_AUTO);
+    String autoSelected = chooser.getSelected();
     System.out.println("Auto selected: " + autoSelected);
+    drivetrain.resetPose(Drivetrain.START_POSE);
+    auto.start(autoSelected);
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    switch (autoSelected) {
-      case CUSTOM_AUTO:
-        // Put custom auto code here
-        break;
-      case DEFAULT_AUTO:
-      default:
-        // Put default auto code here
-        break;
-    }
+    auto.periodic();
   }
 
   /** This function is called once when teleop is enabled. */

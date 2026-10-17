@@ -90,7 +90,11 @@ public class Drivetrain {
    * @param pose the new pose
    */
   public final void resetPose(Pose2d pose) {
+    // setPose also zeroes the simulated wheel positions, so the encoders must follow before
+    // odometry is reset. Otherwise odometry sees the jump as the robot driving backward.
     drivetrainSimulator.setPose(pose);
+    leftEncoderSim.setDistance(drivetrainSimulator.getLeftPosition());
+    rightEncoderSim.setDistance(drivetrainSimulator.getRightPosition());
     OnboardIMUSim.setYaw(pose.getRotation().getRadians());
     odometry.resetPosition(
         imu.getRotation2d(), leftEncoder.getDistance(), rightEncoder.getDistance(), pose);

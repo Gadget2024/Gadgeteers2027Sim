@@ -68,6 +68,47 @@ class DrivetrainTest {
   }
 
   @Test
+  void resetAfterDrivingKeepsThePoseWhereItWasPut() {
+    drive(1.0, 0.0, 100);
+    drive(0.0, 0.0, 50);
+
+    drivetrain.resetPose(Drivetrain.START_POSE);
+    drive(0.0, 0.0, 5);
+
+    Pose2d pose = drivetrain.getPose();
+    assertEquals(Drivetrain.START_POSE.getX(), pose.getX(), 0.01);
+    assertEquals(Drivetrain.START_POSE.getY(), pose.getY(), 0.01);
+  }
+
+  private Pose2d runAuto(String routine, int loops) {
+    SimpleAuto auto = new SimpleAuto(drivetrain);
+    auto.start(routine);
+    for (int i = 0; i < loops; i++) {
+      auto.periodic();
+      drivetrain.simulationPeriodic();
+      drivetrain.periodic();
+    }
+    return drivetrain.getPose();
+  }
+
+  @Test
+  void driveForwardAutoDrivesAboutTwoMeters() {
+    Pose2d pose = runAuto(SimpleAuto.DRIVE_FORWARD, 250);
+
+    assertEquals(Drivetrain.START_POSE.getX() + 2.0, pose.getX(), 0.3);
+    assertEquals(Drivetrain.START_POSE.getY(), pose.getY(), 0.05);
+  }
+
+  @Test
+  void driveAndTurnAutoEndsUpLeftOfTheFirstLeg() {
+    Pose2d pose = runAuto(SimpleAuto.DRIVE_AND_TURN, 500);
+
+    assertEquals(Drivetrain.START_POSE.getX() + 2.0, pose.getX(), 0.4);
+    assertEquals(Drivetrain.START_POSE.getY() + 1.0, pose.getY(), 0.4);
+    assertEquals(90, pose.getRotation().getDegrees(), 15);
+  }
+
+  @Test
   void robotStaysOnTheField() {
     drive(1.0, 0.0, 1000);
 

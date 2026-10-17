@@ -112,6 +112,54 @@ $env:JAVA_HOME = "C:\Users\Public\wpilib\2027_alpha7\jdk"
 .\gradlew.bat test
 ```
 
+## 6. Autonomous
+
+Autonomous routines are in `src/main/java/first/robot/SimpleAuto.java`. Each routine is a
+numbered list of steps, and each step runs until it is done:
+
+```java
+private void driveAndTurn() {
+  switch (step) {
+    case 0 -> { if (driveDistance(2.0, 0.5)) { nextStep(); } } // 2 m forward at half speed
+    case 1 -> { if (turnDegrees(90, 0.4)) { nextStep(); } }    // turn 90° left
+    case 2 -> { if (driveDistance(1.0, 0.5)) { nextStep(); } } // 1 m forward
+    default -> drivetrain.stop();                              // done
+  }
+}
+```
+
+The two building blocks are:
+
+- `driveDistance(meters, throttle)`: drive straight; a negative throttle drives backward.
+- `turnDegrees(degrees, throttle)`: turn in place; positive turns left, negative turns right.
+
+### Run an auto
+
+1. Start the sim and the Driver Station.
+2. In the Sim GUI open **NetworkTables > Tunables > Auto choices** and pick
+   **Drive Forward** or **Drive and Turn**.
+3. In the Driver Station click **Auto**, then **Enable**. The robot jumps back to its start
+   position and runs the routine on the field map.
+4. Click **Disable** when it finishes. Auto keeps running until you disable it.
+
+### Your first task: drive a square
+
+Add a third routine called **Square** that drives a 1.5 m square and ends where it started.
+
+1. In `SimpleAuto.java`, add a name next to the other two:
+   `public static final String SQUARE = "Square";`
+2. Add a `square()` method with eight steps: drive 1.5 m, turn 90°, repeated four times.
+3. In `periodic()`, add `case SQUARE -> square();`.
+4. In `Robot.java`, add it to the chooser: `chooser.add(SimpleAuto.SQUARE, SimpleAuto.SQUARE);`
+5. Restart the sim, pick **Square** in Auto choices, and run it.
+
+The robot won't finish exactly where it started. It slides a little past each target
+before it stops. Try a lower throttle, or stop each step a bit early, and see how close you
+can get.
+
+Ideas after that: drive backward, turn right, or plan a path to a game piece on the
+REBUILT field.
+
 ### Running without VS Code
 
 There is no standalone `simulateJava` Gradle task in 2027 Alpha 7; VS Code launches the
