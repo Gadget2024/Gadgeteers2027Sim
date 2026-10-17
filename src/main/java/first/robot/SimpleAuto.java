@@ -20,8 +20,10 @@ public class SimpleAuto {
   public static final String DRIVE_FORWARD = "Drive Forward";
   public static final String DRIVE_AND_TURN = "Drive and Turn";
   public static final String SQUARE = "Square";
+  public static final String RECORDED = "Recorded";
 
   private final Drivetrain drivetrain;
+  private final DriveRecording recording;
 
   private String routine = DRIVE_FORWARD;
   private int step;
@@ -31,9 +33,11 @@ public class SimpleAuto {
    * Creates the autonomous routines for a drivetrain.
    *
    * @param drivetrain the drivetrain to drive
+   * @param recording the driver recording played by the "Recorded" routine
    */
-  public SimpleAuto(Drivetrain drivetrain) {
+  public SimpleAuto(Drivetrain drivetrain, DriveRecording recording) {
     this.drivetrain = drivetrain;
+    this.recording = recording;
     stepStartPose = drivetrain.getPose();
   }
 
@@ -46,6 +50,9 @@ public class SimpleAuto {
     this.routine = routine != null ? routine : DRIVE_FORWARD;
     step = 0;
     stepStartPose = drivetrain.getPose();
+    if (RECORDED.equals(this.routine)) {
+      recording.startPlayback();
+    }
   }
 
   /**
@@ -55,6 +62,7 @@ public class SimpleAuto {
     switch (routine) {
       case DRIVE_AND_TURN -> driveAndTurn();
       case SQUARE -> square();
+      case RECORDED -> recording.playNext(drivetrain);
       default -> driveForward();
     }
   }

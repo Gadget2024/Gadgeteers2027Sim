@@ -161,6 +161,26 @@ can get.
 Ideas after that: drive backward, turn right, or plan a path to a game piece on the
 REBUILT field.
 
+### Record a drive and replay it as an auto
+
+The **Recorded** auto plays back stick inputs recorded while you drive in teleop.
+
+1. In the Driver Station click **Tele**, then **Enable**.
+2. Press **Back** on the controller. The robot jumps to its start position and recording
+   starts.
+3. Drive the path you want.
+4. Press **Back** again to stop. You can also click **Disable**, which stops and saves too.
+   The console shows `Recording saved: N seconds to ...`.
+5. Pick **Recorded** in **/Tunables/Auto choices**, click **Auto**, then **Enable**. The
+   robot drives the same path from the start position, then stops.
+
+Each new recording replaces the previous one. It is saved in `recorded-auto.csv` (one line
+per 20 ms: forward, rotation) and kept when the robot program restarts. The file is not
+checked in to git.
+
+In the simulator the replay follows the recorded path closely. On a real robot, battery
+level and wheel slip make each run a little different, so keep recorded autos short.
+
 ### Opening Sim GUI windows automatically
 
 The Sim GUI remembers which windows are open in `simgui.json` (not checked in to git).

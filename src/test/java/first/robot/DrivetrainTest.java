@@ -7,10 +7,12 @@ package first.robot;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.file.Path;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.io.TempDir;
 import org.wpilib.hardware.hal.HAL;
 import org.wpilib.hardware.hal.RobotMode;
 import org.wpilib.math.geometry.Pose2d;
@@ -80,8 +82,42 @@ class DrivetrainTest {
     assertEquals(Drivetrain.START_POSE.getY(), pose.getY(), 0.01);
   }
 
+  @Test
+  void recordedAutoRepeatsTheTeleopDrive(@TempDir Path dir) {
+    DriveRecording recording = new DriveRecording(dir.resolve("recorded-auto.csv"));
+
+    // Drive in "teleop" while recording: forward, an arc to the left, then stop.
+    recording.startRecording();
+    for (int i = 0; i < 150; i++) {
+      double forward = i < 50 ? 0.6 : i < 100 ? 0.4 : 0.0;
+      double rotation = i >= 50 && i < 100 ? 0.3 : 0.0;
+      drivetrain.arcadeDrive(forward, rotation);
+      recording.record(forward, rotation);
+      drivetrain.simulationPeriodic();
+      drivetrain.periodic();
+    }
+    recording.stopRecording();
+    Pose2d driven = drivetrain.getPose();
+
+    // Replay it from the same start in autonomous.
+    drivetrain.resetPose(Drivetrain.START_POSE);
+    SimpleAuto auto = new SimpleAuto(drivetrain, recording);
+    auto.start(SimpleAuto.RECORDED);
+    for (int i = 0; i < 200; i++) {
+      auto.periodic();
+      drivetrain.simulationPeriodic();
+      drivetrain.periodic();
+    }
+    Pose2d replayed = drivetrain.getPose();
+
+    assertTrue(driven.getX() > Drivetrain.START_POSE.getX() + 1.0, "x was " + driven.getX());
+    assertEquals(driven.getX(), replayed.getX(), 0.02);
+    assertEquals(driven.getY(), replayed.getY(), 0.02);
+    assertEquals(driven.getRotation().getDegrees(), replayed.getRotation().getDegrees(), 1.0);
+  }
+
   private Pose2d runAuto(String routine, int loops) {
-    SimpleAuto auto = new SimpleAuto(drivetrain);
+    SimpleAuto auto = new SimpleAuto(drivetrain, new DriveRecording());
     auto.start(routine);
     for (int i = 0; i < loops; i++) {
       auto.periodic();

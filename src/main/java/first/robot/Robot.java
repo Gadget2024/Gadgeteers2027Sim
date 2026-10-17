@@ -19,7 +19,8 @@ public class Robot extends TimedRobot {
 
   private final Gamepad controller = new Gamepad(0);
   private final Drivetrain drivetrain = new Drivetrain();
-  private final SimpleAuto auto = new SimpleAuto(drivetrain);
+  private final DriveRecording recording = new DriveRecording();
+  private final SimpleAuto auto = new SimpleAuto(drivetrain, recording);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -29,6 +30,7 @@ public class Robot extends TimedRobot {
     chooser.addDefault(SimpleAuto.DRIVE_FORWARD, SimpleAuto.DRIVE_FORWARD);
     chooser.add(SimpleAuto.DRIVE_AND_TURN, SimpleAuto.DRIVE_AND_TURN);
     chooser.add(SimpleAuto.SQUARE, SimpleAuto.SQUARE);
+    chooser.add(SimpleAuto.RECORDED, SimpleAuto.RECORDED);
     Tunables.publish("Auto choices", chooser);
   }
 
@@ -74,11 +76,25 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     // Left stick drives forward and back, right stick turns. Pushing a stick forward or left
     // reads negative, so both are inverted.
-    drivetrain.arcadeDrive(-controller.getLeftY(), -controller.getRightX());
+    double forward = -controller.getLeftY();
+    double rotation = -controller.getRightX();
+    drivetrain.arcadeDrive(forward, rotation);
+    recording.record(forward, rotation);
 
     // Start puts the robot back where it began.
     if (controller.getStartButtonPressed()) {
       drivetrain.resetPose(Drivetrain.START_POSE);
+    }
+
+    // Back starts and stops recording for the "Recorded" auto. Recording begins at the start
+    // position, because that is where autonomous begins.
+    if (controller.getBackButtonPressed()) {
+      if (recording.isRecording()) {
+        recording.stopRecording();
+      } else {
+        drivetrain.resetPose(Drivetrain.START_POSE);
+        recording.startRecording();
+      }
     }
   }
 
@@ -86,6 +102,8 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     drivetrain.stop();
+    // Disabling in the middle of a recording saves it.
+    recording.stopRecording();
   }
 
   /** This function is called periodically when disabled. */

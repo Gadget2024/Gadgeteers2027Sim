@@ -185,3 +185,6 @@ compile_commands.json
 
 # Eclipse generated file for annotation processors
 .factorypath
+
+# Driver recordings made by the "Recorded" auto
+recorded-auto.csv
