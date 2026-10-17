@@ -136,8 +136,9 @@ The two building blocks are:
 ### Run an auto
 
 1. Start the sim and the Driver Station.
-2. In the Sim GUI open **NetworkTables > Tunables > Auto choices** and pick
-   **Drive Forward** or **Drive and Turn**.
+2. In the Sim GUI, find the **/Tunables/Auto choices** window and pick **Drive Forward**
+   or **Drive and Turn** from its dropdown. If the window isn't open, see
+   [Opening Sim GUI windows automatically](#opening-sim-gui-windows-automatically).
 3. In the Driver Station click **Auto**, then **Enable**. The robot jumps back to its start
    position and runs the routine on the field map.
 4. Click **Disable** when it finishes. Auto keeps running until you disable it.
@@ -159,6 +160,21 @@ can get.
 
 Ideas after that: drive backward, turn right, or plan a path to a game piece on the
 REBUILT field.
+
+### Opening Sim GUI windows automatically
+
+The Sim GUI remembers which windows are open in `simgui.json` (not checked in to git).
+To make the field map and the auto selector open every time, close the sim, then add a
+`windows` section under `NTProvider` in `simgui.json`:
+
+```json
+"windows": {
+  "/Telemetry/Field": { "window": { "visible": true } },
+  "/Tunables/Auto choices": { "window": { "visible": true } }
+}
+```
+
+The Sim GUI rewrites this file when it closes, so edit it only while the sim is stopped.
 
 ### Running without VS Code
 
