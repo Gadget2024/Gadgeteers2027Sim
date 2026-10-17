@@ -1,0 +1,23 @@
+{
+  "NTProvider": {
+    "types": {
+      "/DriverStation": "DriverStation",
+      "/Telemetry/Field": "Field2d",
+      "/Tunables/Auto choices": "Selectable"
+    },
+    "windows": {
+      "/Telemetry/Field": {
+        "Robot": {"style": "Box/Image"},
+        "bottom": 1917,
+        "builtin": "2026 FRC Rebuilt Welded",
+        "height": 8.069,
+        "left": 254,
+        "right": 3951,
+        "top": 121,
+        "width": 16.541,
+        "window": {"visible": true}
+      },
+      "/Tunables/Auto choices": {"window": {"visible": true}}
+    }
+  }
+}
