@@ -112,6 +112,90 @@ $env:JAVA_HOME = "C:\Users\Public\wpilib\2027_alpha7\jdk"
 .\gradlew.bat test
 ```
 
+## 6. Autonomous
+
+Autonomous routines are in `src/main/java/first/robot/SimpleAuto.java`. Each routine is a
+numbered list of steps, and each step runs until it is done:
+
+```java
+private void driveAndTurn() {
+  switch (step) {
+    case 0 -> { if (driveDistance(2.0, 0.5)) { nextStep(); } } // 2 m forward at half speed
+    case 1 -> { if (turnDegrees(90, 0.4)) { nextStep(); } }    // turn 90° left
+    case 2 -> { if (driveDistance(1.0, 0.5)) { nextStep(); } } // 1 m forward
+    default -> drivetrain.stop();                              // done
+  }
+}
+```
+
+The two building blocks are:
+
+- `driveDistance(meters, throttle)`: drive straight; a negative throttle drives backward.
+- `turnDegrees(degrees, throttle)`: turn in place; positive turns left, negative turns right.
+
+### Run an auto
+
+1. Start the sim and the Driver Station.
+2. In the Sim GUI, find the **/Tunables/Auto choices** window and pick **Drive Forward**
+   or **Drive and Turn** from its dropdown. If the window isn't open, see
+   [Opening Sim GUI windows automatically](#opening-sim-gui-windows-automatically).
+3. In the Driver Station click **Auto**, then **Enable**. The robot jumps back to its start
+   position and runs the routine on the field map.
+4. Click **Disable** when it finishes. Auto keeps running until you disable it.
+
+### Your first task: drive a square
+
+Add a third routine called **Square** that drives a 1.5 m square and ends where it started.
+
+1. In `SimpleAuto.java`, add a name next to the other two:
+   `public static final String SQUARE = "Square";`
+2. Add a `square()` method with eight steps: drive 1.5 m, turn 90°, repeated four times.
+3. In `periodic()`, add `case SQUARE -> square();`.
+4. In `Robot.java`, add it to the chooser: `chooser.add(SimpleAuto.SQUARE, SimpleAuto.SQUARE);`
+5. Restart the sim, pick **Square** in Auto choices, and run it.
+
+The robot won't finish exactly where it started. It slides a little past each target
+before it stops. Try a lower throttle, or stop each step a bit early, and see how close you
+can get.
+
+Ideas after that: drive backward, turn right, or plan a path to a game piece on the
+REBUILT field.
+
+### Record a drive and replay it as an auto
+
+The **Recorded** auto plays back stick inputs recorded while you drive in teleop.
+
+1. In the Driver Station click **Tele**, then **Enable**.
+2. Press **Back** on the controller. The robot jumps to its start position and recording
+   starts.
+3. Drive the path you want.
+4. Press **Back** again to stop. You can also click **Disable**, which stops and saves too.
+   The console shows `Recording saved: N seconds to ...`.
+5. Pick **Recorded** in **/Tunables/Auto choices**, click **Auto**, then **Enable**. The
+   robot drives the same path from the start position, then stops.
+
+Each new recording replaces the previous one. It is saved in `recorded-auto.csv` (one line
+per 20 ms: forward, rotation) and kept when the robot program restarts. The file is not
+checked in to git.
+
+In the simulator the replay follows the recorded path closely. On a real robot, battery
+level and wheel slip make each run a little different, so keep recorded autos short.
+
+### Opening Sim GUI windows automatically
+
+The Sim GUI remembers which windows are open in `simgui.json` (not checked in to git).
+To make the field map and the auto selector open every time, close the sim, then add a
+`windows` section under `NTProvider` in `simgui.json`:
+
+```json
+"windows": {
+  "/Telemetry/Field": { "window": { "visible": true } },
+  "/Tunables/Auto choices": { "window": { "visible": true } }
+}
+```
+
+The Sim GUI rewrites this file when it closes, so edit it only while the sim is stopped.
+
 ### Running without VS Code
 
 There is no standalone `simulateJava` Gradle task in 2027 Alpha 7; VS Code launches the

@@ -172,6 +172,9 @@ out/
 networktables.json
 simgui.json
 *-window.json
+# Default Sim GUI layout, copied to the project root by the build when missing
+!/sim-defaults/simgui.json
+!/sim-defaults/simgui-window.json
 
 # Simulation data log directory
 logs/
@@ -185,3 +188,6 @@ compile_commands.json
 
 # Eclipse generated file for annotation processors
 .factorypath
+
+# Driver recordings made by the "Recorded" auto
+recorded-auto.csv

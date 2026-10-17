@@ -1,0 +1,15 @@
+{
+  "MainWindow": {"GLOBAL": {"maximized": "1"}},
+  "Window": {
+    "/Telemetry/Field": {
+      "Collapsed": "0",
+      "Pos": "560,25",
+      "Size": "800,420"
+    },
+    "/Tunables/Auto choices": {
+      "Collapsed": "0",
+      "Pos": "1030,455",
+      "Size": "330,90"
+    }
+  }
+}

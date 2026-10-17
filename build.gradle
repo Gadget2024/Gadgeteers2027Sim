@@ -89,6 +89,24 @@ test {
 wpi.sim.addGui().defaultEnabled = true
 wpi.sim.addDriverstation().defaultEnabled = true
 
+// Give a fresh clone a Sim GUI layout that opens the field map and the auto selector. The Sim
+// GUI rewrites these files each run, so they are ignored by git and only copied when missing.
+tasks.register('copyDefaultSimLayout') {
+    def layoutFiles = ['simgui.json', 'simgui-window.json']
+    doLast {
+        layoutFiles.each { name ->
+            def target = file(name)
+            if (!target.exists()) {
+                target.text = file("sim-defaults/${name}").text
+                println "Created ${name} from sim-defaults"
+            }
+        }
+    }
+}
+tasks.matching { it.name in ['simulateExternalJava', 'run'] }.configureEach {
+    dependsOn 'copyDefaultSimLayout'
+}
+
 application.mainClass = ROBOT_MAIN_CLASS
 
 deployArtifact.configureApplication(application)
